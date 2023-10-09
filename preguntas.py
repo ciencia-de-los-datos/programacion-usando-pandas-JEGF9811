@@ -22,7 +22,8 @@ def pregunta_01():
     40
 
     """
-    return
+    filas=tbl0.shape[0]
+    return filas
 
 
 def pregunta_02():
@@ -33,7 +34,8 @@ def pregunta_02():
     4
 
     """
-    return
+    cols=tbl0.shape[1]
+    return cols
 
 
 def pregunta_03():
@@ -50,7 +52,8 @@ def pregunta_03():
     Name: _c1, dtype: int64
 
     """
-    return
+    cuenta=tbl0['_c1'].value_counts().sort_index()
+    return cuenta
 
 
 def pregunta_04():
@@ -65,7 +68,11 @@ def pregunta_04():
     E    4.785714
     Name: _c2, dtype: float64
     """
-    return
+    serie=pd.Series()
+    letras=['A','B','C','D','E']
+    for letra in letras:
+        serie[f'{letra}']=(tbl0[tbl0['_c1']==letra]['_c2']).mean()
+    return serie
 
 
 def pregunta_05():
@@ -82,7 +89,12 @@ def pregunta_05():
     E    9
     Name: _c2, dtype: int64
     """
-    return
+    serie=pd.Series()
+    letras=['A','B','C','D','E']
+
+    for letra in letras:
+        serie[f'{letra}']=(tbl0[tbl0['_c1']==letra]['_c2']).max()
+    return serie
 
 
 def pregunta_06():
@@ -94,7 +106,11 @@ def pregunta_06():
     ['A', 'B', 'C', 'D', 'E', 'F', 'G']
 
     """
-    return
+    serie=pd.Series(tbl1['_c4'])
+
+    serie=pd.Series(serie.sort_values().unique())
+    lista=list(valor.upper() for valor in serie)
+    return lista
 
 
 def pregunta_07():
@@ -110,7 +126,12 @@ def pregunta_07():
     E    67
     Name: _c2, dtype: int64
     """
-    return
+    serie=pd.Series()
+    for letra in pd.Series(tbl0['_c1']).unique():
+        cuenta=sum(tbl0[tbl0['_c1']==letra]['_c2'])
+        serie[letra]=cuenta
+    serie=serie.sort_index()
+    return serie
 
 
 def pregunta_08():
@@ -128,7 +149,8 @@ def pregunta_08():
     39   39   E    5  1998-01-26    44
 
     """
-    return
+    tbl0['suma']=tbl0['_c0']+tbl0['_c2']
+    return tbl0
 
 
 def pregunta_09():
@@ -146,7 +168,9 @@ def pregunta_09():
     39   39   E    5  1998-01-26  1998
 
     """
-    return
+    year=pd.Series(col.split('-')[0] for col in tbl0['_c3'])
+    tbl0['year']=year
+    return tbl0
 
 
 def pregunta_10():
@@ -163,7 +187,18 @@ def pregunta_10():
     3   D                  1:2:3:5:5:7
     4   E  1:1:2:3:3:4:5:5:5:6:7:8:8:9
     """
-    return
+    serie=pd.Series()
+    tabla=pd.DataFrame()
+    for letra in pd.Series(tbl0['_c1']).unique():
+        nums=list(tbl0[tbl0['_c1']==letra]['_c2'])
+        nums.sort()
+        nums=':'.join(map(str,nums))
+        serie[letra]=nums
+    serie=serie.sort_index()
+    tabla.index=serie.index
+    tabla.index.name='_c1'
+    tabla['_c2']=serie.values
+    return tabla
 
 
 def pregunta_11():
@@ -182,7 +217,17 @@ def pregunta_11():
     38   38      d,e
     39   39    a,d,f
     """
-    return
+    serie=pd.Series()
+    tabla=pd.DataFrame()
+    for num in pd.Series(tbl1['_c0']).unique():
+        letra=list(tbl1[tbl1['_c0']==num]['_c4'])
+        letra.sort()
+        letra=','.join(map(str,letra))
+        serie[num]=letra
+
+    tabla['_c0']=serie.index
+    tabla['_c4']=serie.values
+    return tabla
 
 
 def pregunta_12():
@@ -200,7 +245,25 @@ def pregunta_12():
     38   38                    eee:0,fff:9,iii:2
     39   39                    ggg:3,hhh:8,jjj:5
     """
-    return
+    serie=pd.Series()
+    tabla=pd.DataFrame()
+    lista=[]
+    lista_pares=[]
+
+    tabla['_c0']=tbl2['_c0'].unique()
+    for indice in tbl2['_c0'].unique():
+        lista=[]
+        df=tbl2[tbl2['_c0']==indice]
+        for index,fila in df.iterrows():
+            par=':'.join([fila['_c5a'],str(fila['_c5b'])])
+            lista.append(par)
+            lista.sort()
+            str(lista)
+        lista_pares.append(lista)
+        serie=pd.Series(lista_pares)
+    tabla['_c5']=serie
+    tabla['_c5']=tabla['_c5'].apply(lambda x:','.join(x))
+    return tabla
 
 
 def pregunta_13():
@@ -217,4 +280,16 @@ def pregunta_13():
     E    275
     Name: _c5b, dtype: int64
     """
-    return
+    lista_letras=pd.Series(tbl0['_c1']).unique()
+    lista_letras.sort()
+    lista_temp=[]
+    suma:int
+    serie=pd.Series()
+
+    for letra in lista_letras:
+        suma=0
+        lista_temp=list(tbl0[tbl0["_c1"]==letra]['_c0'])
+        for num in lista_temp:
+            suma=suma+(tbl2[tbl2['_c0']==num]['_c5b']).sum()
+        serie[letra]=suma
+    return serie
